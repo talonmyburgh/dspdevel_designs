@@ -1,3 +1,6 @@
 [submodule "casper_dspdevel"]
 	path = casper_dspdevel
 	url = https://github.com/talonmyburgh/casper_dspdevel.git
+[submodule "mlib_devel"]
+	path = mlib_devel
+	url = https://github.com/realtimeradio/mlib_devel.git
