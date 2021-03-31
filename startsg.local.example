@@ -1,6 +1,6 @@
 export XILINX_PATH=/opt/Xilinx/Vivado/2016.2
 export MATLAB_PATH=/usr/local/MATLAB/R2016b
-export HDL_DSP_DEVEL_PATH=../casper_dspdevel
+export HDL_DSP_DEVEL_PATH=./casper_dspdevel
 export PLATFORM=lin64
 export JASPER_BACKEND=vivado
 export TEMP=/tmp/
