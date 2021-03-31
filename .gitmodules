@@ -1,0 +1,3 @@
+[submodule "casper_dspdevel"]
+	path = casper_dspdevel
+	url = https://github.com/talonmyburgh/casper_dspdevel.git
