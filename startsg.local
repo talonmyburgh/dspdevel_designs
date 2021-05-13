@@ -1,9 +1,10 @@
 export XILINX_PATH=/opt/Xilinx/Vivado/2019.1
-export MATLAB_PATH=/usr/local/MATLAB/R2019a
+export MATLAB_PATH=/usr/local/MATLAB/R2018a
+export MLIB_DEVEL_PATH=./mlib_devel
 export PLATFORM=lin64
 export JASPER_BACKEND=vivado
 export HDL_DSP_DEVEL_PATH=./casper_dspdevel
-export CASPER_PYTHON_VENV_ON_START=../casper_venv
+export CASPER_PYTHON_VENV_ON_START=../../casper_venv
 export LD_PRELOAD=${LD_PRELOAD}:"/usr/lib/x86_64-linux-gnu/libexpat.so"
 export TEMP=/tmp/
 export TMP=/tmp/
