@@ -6,7 +6,7 @@ f = (250)*1e6;           % signal frequency
 a = 1/N;                 % signal amplitude
 snr1 = 30;               % signal-to-noise ratio
 sim_len = 4096;          % how long the simulation must run for
-design = 'wideband_slim_functest.slx'; % design we're simulating
+design = 'wideband_functest.slx'; % design we're simulating
 
 real_sig = a*cos(2*pi*f*t);
 an = 10^((20*log10(a/sqrt(2)) - snr1)/10);
