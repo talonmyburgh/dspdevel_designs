@@ -30,7 +30,39 @@ if ~dual
         Xim(p,:) = im_out(f(p,:));
     end
     X=Xre + 1j*Xim;
-%real out index
+
+    ideal = fft(re_in + 1j * im_in);
+    half_fft = N/2;
+    if reorder_freq                                       %frequencies are needed to be [neg, 0, pos]
+        ideal = fftshift(ideal);
+    else                                                  %frequencies are [0, pos, neg]
+    end
+
+    %Scale the MATLAB FFT to be the same size as the ASTRON one
+    ideal = normaliseandraise(X, ideal);
+    
+    %Plotting
+    x = 1:1:N;
+    subplot(3,2,1)
+    plot(re_in)
+    title('Real Input')
+    subplot(3,2,2)
+    plot(im_in)
+    title('Imag Input')
+    subplot(3,2,3)
+    plot(x,Xre,x,real(ideal))
+    title('X - real')
+    legend('Astron','Matlab');
+    subplot(3,2,4)
+    plot(x,Xim,x,imag(ideal))
+    title('X - imag')
+    legend('Astron','Matlab');
+    subplot(3,2,5)
+    plot(x,abs(X),x,abs(ideal));
+    title('X - Magnitude');
+    legend('Astron','Matlab');
+
+%2 real out index
 else
     even = 2:2:M;
     odd = 1:2:M;
@@ -49,11 +81,10 @@ else
     Aim = reshape(Aim,[1,N/2]);
     Bre = reshape(Bre,[1,N/2]);
     Bim = reshape(Bim,[1,N/2]);
+    
     A = Are+1j*Aim;
     B = Bre+1j*Bim;
-end
 
-if dual
     %ideal fft... we need to split the output to get what we see from HDL.
     ideal = fft(re_in + 1j * im_in);
     R_ideal = real(ideal);
@@ -68,6 +99,11 @@ if dual
     B_ideal = B_ideal(1:N/2);
     A_ideal = (1/(2*1j)) * (R_ideal + 1j * I_ideal - R_flip + 1j * I_flip);
     A_ideal = A_ideal(1:N/2);
+
+    % %Scale the MATLAB FFT to be the same size as the ASTRON one
+    A_ideal = normaliseandraise(A,A_ideal);
+    B_ideal = normaliseandraise(B,B_ideal);
+
     %Plotting
     x = 1:1:N/2;
     subplot(4,2,1)
@@ -100,31 +136,42 @@ if dual
     plot(x,abs(B),x,abs(B_ideal))
     title('B - magnitude')
     legend('Astron','Matlab');
-else
-    ideal = fft(re_in + 1j * im_in);
-    half_fft = N/2;
-    if reorder_freq                                       %frequencies are needed to be [neg, 0, pos]
-        ideal = fftshift(ideal);
-    else                                                  %frequencies are [0, pos, neg]
+end
+
+%assumes complex array inputs
+function aff_arr = normaliseandraise(arr_to_match, arr_to_alter)
+    arr_to_match_real = real(arr_to_match);
+    arr_to_match_imag = imag(arr_to_match);
+    arr_to_alter_real = real(arr_to_alter);
+    arr_to_alter_imag = imag(arr_to_alter);
+
+    %DC of both:
+    arr_to_match_re_dc = mean(abs(arr_to_match_real));
+    arr_to_match_im_dc = mean(abs(arr_to_match_imag));
+    arr_to_alter_re_dc = mean(abs(arr_to_alter_real));
+    arr_to_alter_im_dc = mean(abs(arr_to_alter_imag));
+
+    %zero DC:
+    arr_to_match_real_0dc = arr_to_match_real-arr_to_match_re_dc;
+    arr_to_match_imag_0dc = arr_to_match_imag-arr_to_match_im_dc;
+    arr_to_alter_real = arr_to_alter_real-arr_to_alter_re_dc;
+    arr_to_alter_imag = arr_to_alter_imag-arr_to_alter_im_dc;
+    
+    %scale:
+    arr_to_match_re_scale = max(abs(arr_to_match_real_0dc));
+    arr_to_match_im_scale = max(abs(arr_to_match_imag_0dc));
+    arr_to_alter_re_scale = max(abs(arr_to_alter_real));
+    arr_to_alter_im_scale = max(abs(arr_to_alter_imag));
+
+    if(arr_to_alter_re_scale == 0)
+        arr_to_alter_re_scale = 1;
     end
-    %Plotting
-    x = 1:1:N;
-    subplot(3,2,1)
-    plot(re_in)
-    title('Real Input')
-    subplot(3,2,2)
-    plot(im_in)
-    title('Imag Input')
-    subplot(3,2,3)
-    plot(x,Xre,x,real(ideal))
-    title('X - real')
-    legend('Astron','Matlab');
-    subplot(3,2,4)
-    plot(x,Xim,x,imag(ideal))
-    title('X - imag')
-    legend('Astron','Matlab');
-    subplot(3,2,5)
-    plot(x,abs(X),x,abs(ideal));
-    title('X - Magnitude');
-    legend('Astron','Matlab');
+    if(arr_to_alter_im_scale == 0)
+        arr_to_alter_im_scale = 1;
+    end
+    
+    arr_to_alter_real = arr_to_match_re_dc+(arr_to_alter_real/arr_to_alter_re_scale)*arr_to_match_re_scale;
+    arr_to_alter_imag = arr_to_match_im_dc+(arr_to_alter_imag/arr_to_alter_im_scale)*arr_to_match_im_scale;
+
+    aff_arr = arr_to_alter_real + arr_to_alter_imag*1i;
 end
