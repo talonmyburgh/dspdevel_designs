@@ -11,7 +11,7 @@ an = 10^((20*log10(a/sqrt(2)) - snr1)/10);
 noise_sig0 = zeros(1,sig_len);
 noise_sig0(1:1:sig_len) = sqrt(an)*randn(1,sig_len);
 square_sig1 = zeros(1,sig_len);
-square_sig1(sig_len/4:1:3*sig_len/4) = 1.0/1024.0;
+square_sig1(sig_len/4:1:3*sig_len/4) = 1.0;
 
 %input split up for bram's
 d0 = noise_sig0(1:sig_len);
