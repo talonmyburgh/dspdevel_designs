@@ -43,12 +43,16 @@ window_coeffs = hanning(filter_length);
 filter_coeffs = window_coeffs .* transpose(sinc(fwidth*((1:filter_length)/nof_points - (nof_taps/2))));
 
 %%Interleave recorded inputs%%
-interleaved_input = zeros(sim_len, 1);
+interleaved_input = zeros(filter_length+sim_len, 1);
 for i=1:1:wideband_factor
-    interleaved_input(i:wideband_factor:end) = simout.data_input.data(1:sim_len/wideband_factor,i);
+    interleaved_input(filter_length+i:wideband_factor:end) = simout.data_input.data(1:sim_len/wideband_factor,i);
 end
 %%Slice interleaved input into filter_lengths%%
-input_slices = reshape(interleaved_input, filter_length, []);
+input_slice_count = ((size(interleaved_input, 1)-filter_length)/nof_points);
+input_slices = zeros(filter_length, input_slice_count);
+for slice_index=0:input_slice_count
+    input_slices(:, slice_index+1) = interleaved_input(slice_index*nof_points+1:slice_index*nof_points+filter_length, 1);
+end
 
 %%Interleave recorded output%%
 interleaved_output = zeros(size(simout.data_output.data,1)*wideband_factor, 1);
@@ -64,11 +68,11 @@ whole_output_last_index = (sim_len - mod(sim_len_less_valid_index, nof_points));
 output_slices = reshape(interleaved_output(valid_index:whole_output_last_index-1), nof_points, []);
 
 %%Calculate Theoretical Output%%
-slice_count = sim_len/filter_length;
-theoretical_output_slices = zeros(nof_points, slice_count); 
+output_slice_count = size(output_slices, 2);
+theoretical_output_slices = zeros(nof_points, output_slice_count); 
 %Commutate filter across P rows (resulting in 'nof_taps' cols)
 phased_filter = reshape(filter_coeffs, nof_points, nof_taps);
-for slice_index=1:slice_count
+for slice_index=1:output_slice_count
     %Commutate input-slice across P rows (resulting in 'nof_taps' cols)%%
     phased_input = reshape(input_slices(:,slice_index), nof_points, nof_taps);
     theoretical_output_slices(:, slice_index) = sum(phased_input .* phased_filter, 2); % sum across taps (dim=2)
@@ -77,19 +81,22 @@ end
 
 %%Plotting%%
 %Select an output slice after all taps have been filled
-slice_index = nof_taps;
+slice_index = max(nof_taps-1, 1);
+slice_count = 3;
 
-subplot(1,4,1)
-plot(input_slices(:, slice_index))
+slice_end_index = slice_index+slice_count-1;
+subplot(4,1,1)
+% plot(reshape(input_slices(:, slice_index:slice_end_index), [], 1))
+plot(input_slices(:, slice_index:slice_end_index))
 title('Input')
-subplot(1,4,2)
-theoretical_section = theoretical_output_slices(:, slice_index)
+subplot(4,1,2)
+theoretical_section = reshape(theoretical_output_slices(:, slice_index:slice_end_index), [], 1)
 plot(theoretical_section)
 title('Theoretical')
-subplot(1,4,3)
-output_section = output_slices(:, slice_index+nof_taps-1)
+subplot(4,1,3)
+output_section = reshape(output_slices(:, slice_index:slice_end_index), [], 1)
 plot(output_section)
 title('Output')
-subplot(1,4,4)
+subplot(4,1,4)
 plot(abs(output_section - theoretical_section))
 title('Absolute Difference')
