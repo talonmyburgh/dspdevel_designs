@@ -1,38 +1,51 @@
-function [output_a, output_b] = wideband_fft_process_output(wideband_factor, nof_points, dual_processing)
+function [output_a, output_b, output_x] = wideband_fft_process_output(re_out, im_out, wideband_factor, nof_points, dual_processing)
+    % re_out, im_out has wb_factor columns 
     pipelined_nof_points = nof_points/wideband_factor;
+    num_output_slices = floor(size(re_out,1)/nof_points);
+    output_a = zeros(nof_points/2, num_output_slices);
+    output_b = zeros(nof_points/2, num_output_slices);
+    output_x = zeros(nof_points, num_output_slices);
+    for slice_index = 1:num_output_slices
+        % Process pipelined_nof_points at a time where each is [wideband_factor x pipelined_nof_points].
+        % It is wideband factor major so that flattening later collects across wideband factor first.
+        slice_start = 1+pipelined_nof_points*(slice_index-1);
+        re_output_slice = re_out(slice_start:slice_start+pipelined_nof_points-1,:)'; 
+        im_output_slice = im_out(slice_start:slice_start+pipelined_nof_points-1,:)'; 
 
-        %complex out index
-    if ~dual_processing
-        Xre = zeros(wideband_factor,pipelined_nof_points);
-        Xim = zeros(wideband_factor,pipelined_nof_points);
-        f_tmp = 0:wideband_factor:(pipelined_nof_points-1)*wideband_factor;
-        f = zeros(wideband_factor,pipelined_nof_points);
-        for p=1:1:wideband_factor
-            f(p,:) = p + f_tmp;
-            Xre(p,:) = re_out(f(p,:));
-            Xim(p,:) = im_out(f(p,:));
+        % Real output
+        if dual_processing
+            even = 2:2:pipelined_nof_points;
+            odd = 1:2:pipelined_nof_points;
+            Are = zeros(wideband_factor,pipelined_nof_points/2);
+            Aim = zeros(wideband_factor,pipelined_nof_points/2);
+            Bre = zeros(wideband_factor,pipelined_nof_points/2);
+            Bim = zeros(wideband_factor,pipelined_nof_points/2);
+            
+            for p=1:1:wideband_factor
+                Are(p,:) = re_output_slice(p,odd);
+                Bre(p,:) = re_output_slice(p,even);
+                Aim(p,:) = im_output_slice(p,odd);
+                Bim(p,:) = im_output_slice(p,even);
+            end
+            Are = reshape(Are,[nof_points/2,1]);
+            Aim = reshape(Aim,[nof_points/2,1]);
+            Bre = reshape(Bre,[nof_points/2,1]);
+            Bim = reshape(Bim,[nof_points/2,1]);
+            output_a(:,slice_index) = Are+1j*Aim;
+            output_b(:,slice_index) = Bre+1j*Bim;
+        % Complex output
+        else
+            Xre = zeros(wideband_factor,pipelined_nof_points);
+            Xim = zeros(wideband_factor,pipelined_nof_points);
+            f_tmp = 0:wideband_factor:(pipelined_nof_points-1)*wideband_factor;
+            f = zeros(wideband_factor,pipelined_nof_points);
+            for p=1:1:wideband_factor
+                f(p,:) = p + f_tmp;
+                Xre(p,:) = re_output_slice(f(p,:));
+                Xim(p,:) = im_output_slice(f(p,:));
+            end
+            output_x(:,slice_index) = Xre + 1j*Xim;
+
         end
-        output_a=Xre + 1j*Xim;
-    %real out index
-    else
-        even = 2:2:pipelined_nof_points;
-        odd = 1:2:pipelined_nof_points;
-        Are = zeros(wideband_factor,pipelined_nof_points/2);
-        Aim = zeros(wideband_factor,pipelined_nof_points/2);
-        Bre = zeros(wideband_factor,pipelined_nof_points/2);
-        Bim = zeros(wideband_factor,pipelined_nof_points/2);
-        
-        for p=1:1:wideband_factor
-            Are(p,:) = re_out(p,even);
-            Bre(p,:) = re_out(p,odd);
-            Aim(p,:) = im_out(p,even);
-            Bim(p,:) = im_out(p,odd);
-        end
-        Are = reshape(Are,[1,nof_points/2]);
-        Aim = reshape(Aim,[1,nof_points/2]);
-        Bre = reshape(Bre,[1,nof_points/2]);
-        Bim = reshape(Bim,[1,nof_points/2]);
-        output_a = Are+1j*Aim;
-        output_b = Bre+1j*Bim;
     end
 end
