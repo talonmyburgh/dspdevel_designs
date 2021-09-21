@@ -4,32 +4,35 @@ wideband_factor = 2;
 pipeline_nof_points = nof_points/wideband_factor;
 dual_processing = 1;
 reorder_freq = 0;
-shift_schedule = 1024;
+shift_schedule = 0;
+input_data_width = 18;
+stage_data_width = 18;
+output_data_width = 18;
 
 %Signal generation parameters
 sig_len = 1024;          % number of points in signal
 fs = 0.1e9;               % sampling frequency
 t = (1:sig_len)/fs;      % time vector
 f = 32*1e6;           % signal frequency
-a = 10/nof_points;                 % signal amplitude
+a = (2^input_data_width)/8; % signal amplitude
 snr1 = 30;               % signal-to-noise ratio
-bram_depth = 256;
+bram_depth = 512;
 bram_addr = log2(bram_depth);
 
 k=1:nof_points;
-sig_1 = a*sin((31*2*pi/nof_points)*k); % expect delta in the second bin
-sig_2 = a*sin((32*2*pi/nof_points)*k); % expect delta in the fourth bin
-% sig_2 = zeros(nof_points,1);
-real_sig = sig_1 + sig_2;
+sig_1 = a*sin((441*2*pi/nof_points)*k); % expect delta in the second bin
+sig_2 = a*sin((521*2*pi/nof_points)*k); % expect delta in the fourth bin
 an = 10^((20*log10(a/sqrt(2)) - snr1)/10);
 delta_sig = zeros(sig_len,1);
-delta_sig(3) = 0.75;
+delta_sig(7) = 750;
+real_sig = delta_sig;
+
 % zero_sig = zeros(sig_len)
 
 % noise_sig = sqrt(an)*randn(1,sig_len);
-noise_sig = zeros(nof_points,1);
+noise_sig = delta_sig;
 
-%Simulation parameters
+%Simulation parame7ters
 sim_len = 8192;                   % how long the simulation must run for
 design = 'wideband_functest.slx'; % design we're simulating
 
