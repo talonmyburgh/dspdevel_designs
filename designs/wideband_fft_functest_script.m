@@ -61,6 +61,77 @@ out_re = simout.re_out.data(dv_index:end,:);
 out_im = simout.im_out.data(dv_index:end,:);
 
 [output_a, output_b, output_x] = wideband_fft_process_output(out_re, out_im, wideband_factor, nof_points, dual_processing);
-[theoretical_output_a, theoretical_output_b] = wideband_fft_model(in_re, in_im, nof_points, dual_processing, reorder_freq);
+[theoretical_output_a, theoretical_output_b, theoretical_output_x] = wideband_fft_model(in_re, in_im, nof_points, dual_processing, reorder_freq);
 
-% plot(x,abs(output_b(:,end)),x,abs(theoretical_output_b(:,end)))
+if dual_processing
+	x  = 1:size(output_a, 1);
+	out_a = abs(output_a(:, end))
+	out_b = abs(output_b(:, end))
+	theory_a = abs(theoretical_output_a(:, end))
+	theory_b = abs(theoretical_output_b(:, end))
+
+	% normalise the output signals
+	out_a = out_a/max(out_a)
+	out_b = out_b/max(out_b)
+	theory_a = theory_a/max(theory_a)
+	theory_b = theory_b/max(theory_b)
+
+	subplot(3,2,1)
+	plot(in_re)
+	title('Input A (Real)')
+	subplot(3,2,2)
+	plot(in_im)
+	title('Input B (Real)')
+	
+	subplot(3,2,3)
+	plot(x,out_a,x,theory_a)
+	title('Output A (Abs)')
+	legend('HDL','Ideal');
+	subplot(3,2,4)
+	plot(x,out_b,x,theory_b)
+	title('Output B (Abs)')
+	legend('HDL','Ideal');
+	
+	subplot(3,2,5)
+	plot(abs(theory_a - out_a))
+	title('Output A Difference')
+	subplot(3,2,6)
+	plot(abs(theory_b - out_b))
+	title('Output B Difference')	 
+else
+	
+	x  = 1:size(output_x, 1);
+	out_x_re = real(output_x(:, end))
+	out_x_im = imag(output_x(:, end))
+	theory_re = real(theoretical_output_x(:, end))
+	theory_im = imag(theoretical_output_x(:, end))
+
+	% normalise the output signals
+	out_re = out_re/max(out_re)
+	out_im = out_im/max(out_im)
+	theory_re = theory_re/max(theory_re)
+	theory_im = theory_im/max(theory_im)
+
+	subplot(3,2,1)
+	plot(in_re)
+	title('Real Input')
+	subplot(3,2,2)
+	plot(in_im)
+	title('Imag Input')
+	
+	subplot(3,2,3)
+	plot(x,out_re,x,theory_re)
+	title('Real Output')
+	legend('HDL','Ideal');
+	subplot(3,2,4)
+	plot(x,out_im,x,theory_im)
+	title('Imag Output')
+	legend('HDL','Ideal');
+	
+	subplot(3,2,5)
+	plot(abs(theory_re - out_re))
+	title('Real Output Difference')
+	subplot(3,2,6)
+	plot(abs(theory_im - out_im))
+	title('Imag Output Difference')	 
+end
