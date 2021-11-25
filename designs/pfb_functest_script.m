@@ -84,15 +84,19 @@ subplot(6,1,3);
 x_prefilter = 0:1:nof_points-1;
 plot(x_prefilter,prefilter_output_re(:,slice),x_prefilter,real(theoretical_prefilter_output(:,slice)));
 title('Real prefilter output');
+legend('HDL', 'Ideal')
 subplot(6,1,4);
 plot(x_prefilter,prefilter_output_re(:,slice),x_prefilter,real(theoretical_prefilter_output(:,slice)));
 title('Imaginary prefilter output');
+legend('HDL', 'Ideal')
 subplot(6,1,5);
 x_pfb = 0:1:nof_points/2 -1;
 plot(x_pfb,abs(output_a(:,slice)),x_pfb,abs(theoretical_pfb_output_a(:,slice))/scale);
 title("PFB output A, actual and theoretical");
+legend('HDL', 'Ideal')
 subplot(6,1,6);
 plot(x_pfb,abs(output_b(:,slice)),x_pfb,abs(theoretical_pfb_output_b(:,slice))/scale);
 title("PFB output B, actual and theoretical");
+legend('HDL', 'Ideal')
 
 
