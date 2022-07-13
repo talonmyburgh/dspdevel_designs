@@ -1,0 +1,65 @@
+{
+  "version": "0.1",
+  "mappings": [
+    {
+      "library": "work",
+      "files": [
+        ""
+      ]
+    },
+    {
+      "library": "common_pkg_lib",
+      "files": [
+        "casper_dspdevel/common_pkg"
+      ]
+    },
+    {
+      "library": "common_components_lib",
+      "files": [
+        "casper_dspdevel/common_components"
+      ]
+    },
+    {
+      "library": "casper_adder_lib",
+      "files": [
+        "casper_dspdevel/casper_adder"
+      ]
+    },
+    {
+      "library": "casper_counter_lib",
+      "files": [
+        "casper_dspdevel/casper_counter"
+      ]
+    },
+    {
+      "library": "casper_delay_lib",
+      "files": [
+        "casper_dspdevel/casper_delay"
+      ]
+    },
+    {
+      "library": "casper_misc_lib",
+      "files": [
+        "casper_dspdevel/misc"
+      ]
+    },
+    {
+      "library": "r2sdf_fft_lib",
+      "files": [
+        "casper_dspdevel/r2sdf_fft"
+      ]
+    },
+    {
+      "library": "casper_ram_lib",
+      "files": [
+        "casper_dspdevel/casper_ram"
+      ]
+    },
+    {
+      "library": "casper_pipeline_lib",
+      "files": [
+        "casper_dspdevel/casper_pipeline"
+      ]
+    }
+  ]
+}
