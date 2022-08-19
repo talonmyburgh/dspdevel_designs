@@ -60,6 +60,60 @@
       "files": [
         "casper_dspdevel/casper_pipeline"
       ]
+    },
+    {
+      "library": "wb_fft_lib",
+      "files": [
+        "casper_dspdevel/casper_wb_fft"
+      ]
+    },
+    {
+      "library": "casper_mm_lib",
+      "files": [
+        "casper_dspdevel/casper_mm"
+      ]
+    },
+    {
+      "library": "casper_sim_tools_lib",
+      "files": [
+        "casper_dspdevel/casper_sim_tools"
+      ]
+    },
+    {
+      "library": "casper_filter_lib",
+      "files": [
+        "casper_dspdevel/casper_filter"
+      ]
+    },
+    {
+      "library": "casper_requantize_lib",
+      "files": [
+        "casper_dspdevel/casper_requantize"
+      ]
+    },
+    {
+      "library": "dp_pkg_lib",
+      "files": [
+        "casper_dspdevel/casper_dp_pkg"
+      ]
+    },
+    {
+      "library": "casper_diagnostics_lib",
+      "files": [
+        "casper_dspdevel/casper_diagnostics"
+      ]
+    },
+    {
+      "library": "wpfb_lib",
+      "files": [
+        "casper_dspdevel/casper_wbpfb"
+      ]
+    },
+    {
+      "library": "dp_components_lib",
+      "files": [
+        "casper_dspdevel/casper_dp_components"
+      ]
     }
   ]
 }
