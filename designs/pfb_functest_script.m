@@ -15,7 +15,7 @@ enable_prefilter = true;
 
 % Simulation values
 design = 'pfb_wideband_functest.slx'; % design we're simulating 
-sim_len = 16000;          % how long the simulation must run for
+sim_len = 8000;          % how long the simulation must run for
 
 %Signal generation parameters
 sig_len = 1024;          % number of points in signal
@@ -30,7 +30,7 @@ bram_addr = log2(bram_depth);
 k=1:nof_points;
 sig_1 = a*sin((32*2*pi/nof_points)*k); % expect delta in the second bin
 sig_1 = sig_1;
-sig_2 = zeros(sig_len);
+sig_2 = randn(nof_points);
 
 %%fill BRAMs%%
 d0 = sig_2(1:wideband_factor*nof_streams:nof_points);
